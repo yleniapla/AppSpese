@@ -67,6 +67,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // ),
   ];
 
+  bool _mostraGrafico = false;
+
   List<Transazione> get _transazioniRecenti {
     return _transazioniUtente.where((tx) {
       return tx.data.isAfter(
@@ -105,6 +107,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool orizzontale =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     final appBar = AppBar(
       title: Text(
         'Spese',
@@ -118,23 +123,52 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
     );
 
+    final widgetLista = Container(
+      child: ListaTransazioni(_transazioniUtente, _cancellaTransazione),
+      height: (MediaQuery.of(context).size.height -
+          appBar.preferredSize.height -
+          MediaQuery.of(context).padding.top),
+    );
+
     return Scaffold(
         appBar: appBar,
         body: ListView(
           physics: BouncingScrollPhysics(),
           children: <Widget>[
-            Container(
-              child: Chart(_transazioniRecenti),
-              height: (MediaQuery.of(context).size.height -
-                      appBar.preferredSize.height - MediaQuery.of(context).padding.top) *
-                  0.30,
-            ),
-            Container(
-              child: ListaTransazioni(_transazioniUtente, _cancellaTransazione),
-              height: (MediaQuery.of(context).size.height -
-                      appBar.preferredSize.height - MediaQuery.of(context).padding.top) *
-                  0.70,
-            ),
+            if (orizzontale)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text("Mostra grafico"),
+                  Switch(
+                    value: _mostraGrafico,
+                    onChanged: (val) {
+                      setState(() {
+                        _mostraGrafico = val;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            if (!orizzontale)
+              Container(
+                child: Chart(_transazioniRecenti),
+                height: (MediaQuery.of(context).size.height -
+                        appBar.preferredSize.height -
+                        MediaQuery.of(context).padding.top) *
+                    0.3,
+              ),
+            if (!orizzontale) widgetLista,
+            if (orizzontale)
+              _mostraGrafico
+                  ? Container(
+                      child: Chart(_transazioniRecenti),
+                      height: (MediaQuery.of(context).size.height -
+                              appBar.preferredSize.height -
+                              MediaQuery.of(context).padding.top) *
+                          0.7,
+                    )
+                  : widgetLista,
           ],
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

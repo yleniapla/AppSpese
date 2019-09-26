@@ -12,20 +12,22 @@ class ListaTransazioni extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return transazioni.isEmpty
-        ? Column(
-            children: <Widget>[
-              Text('Ancora nessuna transazione!!!',
-                  style: Theme.of(context).textTheme.title),
-              SizedBox(
-                height: 20,
-              ),
-              Container(
-                child:
-                    Image.asset('assets/images/waiting.png', fit: BoxFit.cover),
-                height: 200,
-              ),
-            ],
-          )
+        ? LayoutBuilder(builder: (context, constraints) {
+            return Column(
+              children: <Widget>[
+                Text('Ancora nessuna transazione!!!',
+                    style: Theme.of(context).textTheme.title),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  child: Image.asset('assets/images/waiting.png',
+                      fit: BoxFit.cover),
+                  height: constraints.maxHeight * 0.6,
+                ),
+              ],
+            );
+          })
         : ListView.builder(
             itemBuilder: (ctx, index) {
               return Card(
