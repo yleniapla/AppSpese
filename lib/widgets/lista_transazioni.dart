@@ -14,7 +14,7 @@ class ListaTransazioni extends StatelessWidget {
     return transazioni.isEmpty
         ? Column(
             children: <Widget>[
-              Text('Ancora nessuna transazione!',
+              Text('Ancora nessuna transazione!!!',
                   style: Theme.of(context).textTheme.title),
               SizedBox(
                 height: 20,
