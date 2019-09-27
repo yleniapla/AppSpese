@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:app_spese/widgets/bottone_adattivo.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -50,7 +54,7 @@ class _NuovaTransazioneState extends State<NuovaTransazione> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-          child: Card(
+      child: Card(
         elevation: 5,
         child: Container(
           padding: EdgeInsets.only(
@@ -88,25 +92,26 @@ class _NuovaTransazioneState extends State<NuovaTransazione> {
                           ? 'Nessuna data scelta!'
                           : 'Data: ${DateFormat.yMd().format(_dataSelezionata)}'),
                     ),
-                    FlatButton(
-                      textColor: Theme.of(context).primaryColor,
-                      child: Text(
-                        'Scegli una data',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      onPressed: _mostraDatePicker,
-                    )
+                   Bottone(_mostraDatePicker, "Scegli una data")
                   ],
                 ),
               ),
-              RaisedButton(
-                child: Text(
-                  'Aggiungi transazione',
-                ),
-                color: Theme.of(context).primaryColor,
-                textColor: Theme.of(context).textTheme.button.color,
-                onPressed: _submit,
-              )
+              Platform.isIOS
+                  ? CupertinoButton(
+                      child: Text(
+                        'Aggiungi transazione',
+                      ),
+                      color: Theme.of(context).primaryColor,
+                      onPressed: _submit,
+                    )
+                  : RaisedButton(
+                      child: Text(
+                        'Aggiungi transazione',
+                      ),
+                      color: Theme.of(context).primaryColor,
+                      textColor: Theme.of(context).textTheme.button.color,
+                      onPressed: _submit,
+                    )
             ],
           ),
         ),
