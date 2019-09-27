@@ -107,13 +107,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final mQ = MediaQuery.of(context);
-    final bool orizzontale = mQ.orientation == Orientation.landscape;
-
-    final PreferredSizeWidget appBar = Platform.isIOS
-        ? CupertinoNavigationBar(
+  Widget _cupertinoBar(){
+    return CupertinoNavigationBar(
             middle: Text(
               'Spese',
               style: TextStyle(fontFamily: 'OpenSans'),
@@ -127,8 +122,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-          )
-        : AppBar(
+          );
+  }
+
+  Widget _materialBar(){
+    return AppBar(
             title: Text(
               'Spese',
               style: TextStyle(fontFamily: 'OpenSans'),
@@ -140,6 +138,20 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             ],
           );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    final PreferredSizeWidget appBar = Platform.isIOS ? _cupertinoBar()
+        : _materialBar();
+    return appBar;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mQ = MediaQuery.of(context);
+    final bool orizzontale = mQ.orientation == Orientation.landscape;
+
+    PreferredSizeWidget appBar = _buildAppBar();
 
     final widgetLista = Container(
       child: ListaTransazioni(_transazioniUtente, _cancellaTransazione),
@@ -210,4 +222,5 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () => _startNuovaTransazione(context),
                   ));
   }
+
 }
