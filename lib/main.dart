@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:app_spese/widgets/chart.dart';
 import 'package:app_spese/widgets/lista_transazioni.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'models/transazione.dart';
 import 'widgets/nuova_transazione.dart';
@@ -67,6 +69,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // ),
   ];
 
+  bool _mostraGrafico = false;
+
   List<Transazione> get _transazioniRecenti {
     return _transazioniUtente.where((tx) {
       return tx.data.isAfter(
@@ -105,42 +109,105 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final appBar = AppBar(
-      title: Text(
-        'Spese',
-        style: TextStyle(fontFamily: 'OpenSans'),
-      ),
-      actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () => _startNuovaTransazione(context),
-        )
-      ],
+    final mQ = MediaQuery.of(context);
+    final bool orizzontale = mQ.orientation == Orientation.landscape;
+
+    final PreferredSizeWidget appBar = Platform.isIOS
+        ? CupertinoNavigationBar(
+            middle: Text(
+              'Spese',
+              style: TextStyle(fontFamily: 'OpenSans'),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                GestureDetector(
+                  child: Icon(CupertinoIcons.add),
+                  onTap: () => _startNuovaTransazione(context),
+                ),
+              ],
+            ),
+          )
+        : AppBar(
+            title: Text(
+              'Spese',
+              style: TextStyle(fontFamily: 'OpenSans'),
+            ),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () => _startNuovaTransazione(context),
+              )
+            ],
+          );
+
+    final widgetLista = Container(
+      child: ListaTransazioni(_transazioniUtente, _cancellaTransazione),
+      height: (mQ.size.height - appBar.preferredSize.height - mQ.padding.top),
     );
 
-    return Scaffold(
-        appBar: appBar,
-        body: ListView(
-          physics: BouncingScrollPhysics(),
+    final pageBody = SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
           children: <Widget>[
-            Container(
-              child: Chart(_transazioniRecenti),
-              height: (MediaQuery.of(context).size.height -
-                      appBar.preferredSize.height - MediaQuery.of(context).padding.top) *
-                  0.30,
-            ),
-            Container(
-              child: ListaTransazioni(_transazioniUtente, _cancellaTransazione),
-              height: (MediaQuery.of(context).size.height -
-                      appBar.preferredSize.height - MediaQuery.of(context).padding.top) *
-                  0.70,
-            ),
+            if (orizzontale)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    "Mostra grafico",
+                    style: Theme.of(context).textTheme.title,
+                  ),
+                  Switch.adaptive(
+                    activeColor: Theme.of(context).accentColor,
+                    value: _mostraGrafico,
+                    onChanged: (val) {
+                      setState(() {
+                        _mostraGrafico = val;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            if (!orizzontale)
+              Container(
+                child: Chart(_transazioniRecenti),
+                height: (mQ.size.height -
+                        appBar.preferredSize.height -
+                        mQ.padding.top) *
+                    0.3,
+              ),
+            if (!orizzontale) widgetLista,
+            if (orizzontale)
+              _mostraGrafico
+                  ? Container(
+                      child: Chart(_transazioniRecenti),
+                      height: (mQ.size.height -
+                              appBar.preferredSize.height -
+                              mQ.padding.top) *
+                          0.7,
+                    )
+                  : widgetLista,
           ],
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () => _startNuovaTransazione(context),
-        ));
+      ),
+    );
+
+    return Platform.isIOS
+        ? CupertinoPageScaffold(
+            child: pageBody,
+            navigationBar: appBar,
+          )
+        : Scaffold(
+            appBar: appBar,
+            body: pageBody,
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: Platform.isIOS
+                ? Container()
+                : FloatingActionButton(
+                    child: Icon(Icons.add),
+                    onPressed: () => _startNuovaTransazione(context),
+                  ));
   }
 }
