@@ -107,8 +107,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final mQ = MediaQuery.of(context);
     final bool orizzontale =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+        mQ.orientation == Orientation.landscape;
 
     final appBar = AppBar(
       title: Text(
@@ -125,9 +126,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final widgetLista = Container(
       child: ListaTransazioni(_transazioniUtente, _cancellaTransazione),
-      height: (MediaQuery.of(context).size.height -
+      height: (mQ.size.height -
           appBar.preferredSize.height -
-          MediaQuery.of(context).padding.top),
+          mQ.padding.top),
     );
 
     return Scaffold(
@@ -153,9 +154,9 @@ class _MyHomePageState extends State<MyHomePage> {
             if (!orizzontale)
               Container(
                 child: Chart(_transazioniRecenti),
-                height: (MediaQuery.of(context).size.height -
+                height: (mQ.size.height -
                         appBar.preferredSize.height -
-                        MediaQuery.of(context).padding.top) *
+                        mQ.padding.top) *
                     0.3,
               ),
             if (!orizzontale) widgetLista,
@@ -163,9 +164,9 @@ class _MyHomePageState extends State<MyHomePage> {
               _mostraGrafico
                   ? Container(
                       child: Chart(_transazioniRecenti),
-                      height: (MediaQuery.of(context).size.height -
+                      height: (mQ.size.height -
                               appBar.preferredSize.height -
-                              MediaQuery.of(context).padding.top) *
+                              mQ.padding.top) *
                           0.7,
                     )
                   : widgetLista,
